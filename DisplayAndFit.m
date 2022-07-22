@@ -3,14 +3,18 @@
     spectrafigure = uifigure;
     spectrafigure.Color = 'w';
     %spectrafigure.Position(3:4) = [430 320];
-    spectrafigure.Position(3:4) = [1200 1000];
+    screenDims = get(0,'ScreenSize');
+    figureWidth = screenDims(3) * 0.5;
+    figureHeight = screenDims(4) * 0.5;
+    spectrafigure.Position(3:4) = [figureWidth figureHeight];
+    
     names = {};
     index = [1:length(spectra)];
     for i = 1:length(spectra)
         names{i} = spectra(i).name;
     end
     %ax = uiaxes('Parent',spectrafigure,'Position',[10 10 300 300],'XLim', [2700 3200]);
-    ax = uiaxes('Parent',spectrafigure,'Position',[10 10 990 990],'XLim', [2700 3200]);
+    ax = uiaxes('Parent',spectrafigure,'Position',[10 10 (figureWidth - 210) (figureHeight - 10)],'XLim', [2700 3200]);
     tempSpectrum = (spectra(1).data);
     minimumValue = min(spectra(1).data);
     if spectra(1).data(1) >= 1
@@ -35,17 +39,17 @@
     spectrafigure.Name = strcat(num2str(1), " - ", spectra(1).name);
     fakeNR = zeros(1,numel(tempSpectrum));
     %dropdown = uidropdown(spectrafigure,'Items',names,'ItemsData',index,'ValueChangedFcn',@(dropdown,event) selection(dropdown,p,ax,spectrafigure,sldNRWL), 'Position', [1000 960 200 20]);
-    dropdown = uidropdown(spectrafigure,'Items',names,'ItemsData',index,'Position', [1000 960 200 20]);
+    dropdown = uidropdown(spectrafigure,'Items',names,'ItemsData',index,'Position', [figureWidth - 200 figureHeight - 40 200 20]);
     
-    peakWL = uieditfield(spectrafigure,'text','Position',[1000 940 200 20],'Value','2851 2878 2915 2934 2967');
-    phaseSelectGroup = uibuttongroup(spectrafigure,'Position',[1000 840 200 100],'BackgroundColor','w');
+    peakWL = uieditfield(spectrafigure,'text','Position',[figureWidth - 200 figureHeight - 60 200 20],'Value','2851 2878 2915 2934 2967');
+    phaseSelectGroup = uibuttongroup(spectrafigure,'Position',[figureWidth - 200 figureHeight - 160 200 100],'BackgroundColor','w');
     buttonPhi0 = uiradiobutton(phaseSelectGroup,'Position',[10 80 200 20],'Text','ϕ = 0');
     buttonPhiPiby2 = uiradiobutton(phaseSelectGroup,'Position',[10 60 200 20],'Text','ϕ = π/2');
     buttonPhiPi = uiradiobutton(phaseSelectGroup,'Position',[10 40 200 20],'Text','ϕ = π','Value',1);
     buttonPhi3Piby4 = uiradiobutton(phaseSelectGroup,'Position',[10 20 200 20],'Text','ϕ = 3π/4');
-    sldNRWL = uislider(spectrafigure,'Position',[1025 800 150 3],'Limits',[spectra(1).wavenumber(tempMaxEl-150) spectra(1).wavenumber(tempMaxEl+150)],'Value',spectra(1).wavenumber(tempMaxEl));
-    sldNRWidth = uislider(spectrafigure,'Position',[1025 760 150 3],'Limits',[0 250],'Value',135);
-    sldNRAmp = uislider(spectrafigure,'Position',[1025 720 150 3],'Limits',[0 tempMax*2],'Value',tempMax);
+    sldNRWL = uislider(spectrafigure,'Position',[figureWidth - 175 figureHeight - 180 150 3],'Limits',[spectra(1).wavenumber(tempMaxEl-150) spectra(1).wavenumber(tempMaxEl+150)],'Value',spectra(1).wavenumber(tempMaxEl));
+    sldNRWidth = uislider(spectrafigure,'Position',[figureWidth - 175 figureHeight - 220 150 3],'Limits',[0 250],'Value',135);
+    sldNRAmp = uislider(spectrafigure,'Position',[figureWidth - 175 figureHeight - 260 150 3],'Limits',[0 tempMax*2],'Value',tempMax);
 
 
 
@@ -54,8 +58,8 @@
     sldNRWL.ValueChangedFcn = @(sldNRWL,event) updateNR(sldNRWL,sldNRWidth,sldNRAmp,fakeNR,dropdown,p,ax,spectrafigure);
     sldNRWidth.ValueChangedFcn = @(sldNRWidth,event) updateNR(sldNRWL,sldNRWidth,sldNRAmp,fakeNR,dropdown,p,ax,spectrafigure);
     sldNRAmp.ValueChangedFcn = @(sldNRAmp,event) updateNR(sldNRWL,sldNRWidth,sldNRAmp,fakeNR,dropdown,p,ax,spectrafigure);
-    buttonCH = uibutton(spectrafigure,'push','Position',[1000 650 200 20],'Text','CH','ButtonPushedFcn',@(buttonCH,event) addCH(peakWL));
-    buttonFit = uibutton(spectrafigure,'push','Position', [1000 630 200 20], 'ButtonPushedFcn',@(buttonFit,event) fitCurrent(buttonFit,dropdown,peakWL.Value,phaseSelectGroup.SelectedObject.Text,sldNRWL,sldNRWidth,sldNRAmp,fitOutput),'Text','Fit');
+    buttonCH = uibutton(spectrafigure,'push','Position',[figureWidth - 200 figureHeight - 320 200 20],'Text','CH','ButtonPushedFcn',@(buttonCH,event) addCH(peakWL));
+    buttonFit = uibutton(spectrafigure,'push','Position', [figureWidth - 200 figureHeight - 340 200 20], 'ButtonPushedFcn',@(buttonFit,event) fitCurrent(buttonFit,dropdown,peakWL.Value,phaseSelectGroup.SelectedObject.Text,sldNRWL,sldNRWidth,sldNRAmp,fitOutput),'Text','Fit');
     
     
     %end
